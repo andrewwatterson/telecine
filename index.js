@@ -77,10 +77,13 @@ exports.telecine = async (options) => {
   var gif = fs.createWriteStream(output);
 
   var options = {
-
+    compress: 0,
+    resize: `${options.width}:${options.height}`,
+    fps: 15,
+    loop: false
   };
 
-  gifify(moviePath, options).pipe(gif);
+  await gifify(moviePath, options).pipe(gif);
 
 };
 
