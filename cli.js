@@ -1,0 +1,20 @@
+const argv = require('yargs')
+  .alias('url', 'u')
+  .describe('url', 'URL to generate GIF from')
+  .alias('height', 'h').default('height', 667)
+  .describe('height', 'Height of the viewport to capture in pixels')
+  .alias('width', 'w').default('width', 375)
+  .describe('width', 'Width of the viewport to capture in pixels')
+  .alias('duration', 'd').default('duration', 10)
+  .describe('duration', 'GIF duration in seconds')
+  .alias('interval', 'i').default('interval', 1000)
+  .describe('interval', 'Interval between frames in milliseconds')
+  .alias('output', 'o').default('output', `${process.cwd()}${require('path').sep}telecine.gif`)
+  .describe('output', 'Output file name')
+  .alias('V', 'version')
+  .usage('telecine -u URL [-d DURATION] [-i INTERVAL] [-h HEIGHT] [-w WIDTH] [-o OUTFILE]')
+  .version()
+  .demandOption(['url'], "You must specify a URL")
+  .argv;
+
+  // CALL TELECINE AT SOME POINT WITH {options}
