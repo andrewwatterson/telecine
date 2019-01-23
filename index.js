@@ -4,9 +4,12 @@ const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const tempdir = require('tempdir');
+const process = require('process');
 const ScreenRecorder = require('screen-recorder').ScreenRecorder;
-var gifify = require('gifify');
+//var gifify = require('gifify');
 //const gify = require('gify');
+var spawn = require('child-process-promise').spawn;
+var exec = require('child-process-promise').exec;
 const screenres = require('screenres');
 
 const CHROME_UI_HEIGHT = 80;
@@ -22,8 +25,10 @@ exports.telecine = async (options) => {
   // duration (in s)
   // outputFile
 
-  const tempdirForMovie = await tempdir();
-  const moviePath = path.join(tempdirForMovie, 'temp.mp4');
+  //const tempdirForMovie = await tempdir();
+  //const tempdirForMovie = process.cwd() + '/temp/';
+  const tempdirForMovie = 'temp/';
+  const moviePath = path.join(tempdirForMovie, options.outputFile);
 
   const browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
@@ -51,7 +56,7 @@ exports.telecine = async (options) => {
   const screenX = res[0];
   const screenY = res[1];
 
-  var movie = new ScreenRecorder(path.join(tempdirForMovie, 'temp.mp4')) // [, displayId]
+  var movie = new ScreenRecorder(moviePath) // [, displayId]
   movie.setCapturesMouseClicks(true)
   console.log(WINDOW_OFFSET_X, screenY - WINDOW_OFFSET_Y - CHROME_UI_HEIGHT - options.height, options.width, options.height)
   movie.setCropRect(WINDOW_OFFSET_X, screenY - WINDOW_OFFSET_Y - CHROME_UI_HEIGHT - options.height, options.width, options.height)
@@ -72,18 +77,38 @@ exports.telecine = async (options) => {
   // });
 
 
-  var output = path.join(__dirname, options.outputFile);
+  //var output = path.join(process.cwd(), options.outputFile);
+  var output = path.join('gifs/', options.outputFile);
 
-  var gif = fs.createWriteStream(output);
+//  var gif = fs.createWriteStream(output);
 
-  var options = {
-    compress: 0,
-    resize: `${options.width}:${options.height}`,
-    fps: 15,
-    loop: false
-  };
+//   await spawn(path.join(__dirname, 'gifify'), [
+//     '--compress', '0',
+//     '--resize', `${options.width}:${options.height}`,
+//     '--fps', '15',
+// //    '--no-loop',
+//     moviePath,
+//     '-o', output
+//   ])
+//   .catch(function (err) {
+//     console.error('[spawn] ERROR: ', err);
+//   });
 
-  await gifify(moviePath, options).pipe(gif);
+  await exec(
+    `${path.join(__dirname, 'gifify')} --colors 255 --no-loop --compress 0 --resize ${options.width}:${options.height} --fps 24 ${moviePath} -o ${output}`
+  )
+  .catch(function (err) {
+    console.error('[spawn] ERROR: ', err);
+  });
+
+  // var options = {
+  //   compress: 0,
+  //   resize: `${options.width}:${options.height}`,
+  //   fps: 15,
+  //   loop: false
+  // };
+
+//  await gifify(moviePath, options).pipe(gif);
 
 };
 
