@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const tempdir = require('tempdir');
@@ -28,6 +28,13 @@ exports.telecine = async (options) => {
 
   //const tempdirForMovie = await tempdir();
   //const tempdirForMovie = process.cwd() + '/temp/';
+
+  /*************************************/
+  /* TODO: create temp dir and destroy it at the end */
+  /* and fix file extension */
+  /* and use real temp directory */
+  /*************************************/
+
   const tempdirForMovie = 'temp/';
   const moviePath = path.join(tempdirForMovie, options.outputFile);
 
@@ -95,6 +102,10 @@ exports.telecine = async (options) => {
 //     console.error('[spawn] ERROR: ', err);
 //   });
 
+/*************************************/
+/* TODO: make loop the default */
+/*************************************/
+
   var loopFlag = options.loop ? '' : '--no-loop';
 
   await exec(
@@ -103,6 +114,8 @@ exports.telecine = async (options) => {
   .catch(function (err) {
     console.error('[spawn] ERROR: ', err);
   });
+
+  await fs.remove(moviePath);
 
   // var options = {
   //   compress: 0,
