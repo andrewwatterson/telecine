@@ -24,6 +24,7 @@ exports.telecine = async (options) => {
   // url
   // duration (in s)
   // outputFile
+  // loop (boolean)
 
   //const tempdirForMovie = await tempdir();
   //const tempdirForMovie = process.cwd() + '/temp/';
@@ -94,8 +95,10 @@ exports.telecine = async (options) => {
 //     console.error('[spawn] ERROR: ', err);
 //   });
 
+  var loopFlag = options.loop ? '' : '--no-loop';
+
   await exec(
-    `${path.join(__dirname, 'gifify')} --colors 255 --no-loop --compress 0 --resize ${options.width}:${options.height} --fps 24 ${moviePath} -o ${output}`
+    `${path.join(__dirname, 'gifify')} --colors 255 ${loopFlag} --compress 0 --resize ${options.width}:${options.height} --fps 24 ${moviePath} -o ${output}`
   )
   .catch(function (err) {
     console.error('[spawn] ERROR: ', err);
